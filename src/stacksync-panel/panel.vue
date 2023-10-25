@@ -1,0 +1,46 @@
+<template>
+  <div class="stacksync-panel-container" :class="{ 'has-header': showHeader }">
+    <component :is="componentMap[type]" />
+  </div>
+</template>
+
+<script>
+import { Customer, Product, PaymentRequest } from './screens';
+
+export default {
+  components: { Customer, Product, PaymentRequest },
+  props: {
+    showHeader: {
+      type: Boolean,
+      default: true,
+    },
+    type: {
+      type: String,
+      default: 'customers',
+    },
+  },
+  data() {
+    return {
+      componentMap: {
+        customers: 'Customer',
+        products: 'Product',
+        payment_request: 'PaymentRequest',
+      },
+    };
+  },
+  setup(props) {
+    return {};
+  },
+};
+</script>
+
+<style scoped>
+.stacksync-panel-container {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  /* display: flex;
+	flex-direction: column;
+	justify-content: center; */
+}
+</style>
