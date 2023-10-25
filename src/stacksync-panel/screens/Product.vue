@@ -107,39 +107,6 @@ import { ProductForm } from '../components'; // Import the form component
 
 export default {
   components: { ProductForm },
-  methods: {
-    // Method for handling form submission
-    async handleFormSubmit({ data, isUpdate }) {
-      console.log(data);
-      console.log(isUpdate);
-      // ... existing code ...
-      try {
-        if (isUpdate) {
-          // Handle update logic using data object
-          await this.updateProduct(data);
-        } else {
-          // Handle create logic using data object
-          await this.createProduct(data);
-        }
-        // Handle success or any other necessary operations
-      } catch (error) {
-        console.error(error);
-        // Handle error
-      } finally {
-        this.closeDrawer();
-      }
-    },
-    // Method for creating a new product
-    async createProduct(productData) {
-      // API call to create a new product
-      // Example API call: await api.post('/products', productData);
-    },
-    // Method for updating an existing product
-    async updateProduct(productData) {
-      // API call to update an existing product
-      // Example API call: await api.put(`/products/${productData.id}`, productData);
-    },
-  },
   setup() {
     const api = useApi();
 
@@ -171,6 +138,27 @@ export default {
       isUpdateFormVisible.value = false;
       isDrawerOpen.value = false;
       productData.value = {}; // Clear form data when closing drawer
+    };
+
+    const handleFormSubmit = async ({ data, isUpdate }) => {
+      console.log(data);
+      console.log(isUpdate);
+      // ... existing code ...
+      try {
+        if (isUpdate) {
+          // Handle update logic using data object
+          // await updateProduct(data);
+        } else {
+          // Handle create logic using data object
+          // await createProduct(data);
+        }
+        // Handle success or any other necessary operations
+      } catch (error) {
+        console.error(error);
+        // Handle error
+      } finally {
+        closeDrawer();
+      }
     };
 
     // ... existing methods ...
@@ -208,6 +196,7 @@ export default {
       openProductOptions,
       closeDrawer,
       handleSearch,
+      handleFormSubmit,
       fetchData,
     };
   },

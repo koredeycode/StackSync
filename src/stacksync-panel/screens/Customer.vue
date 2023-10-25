@@ -115,41 +115,7 @@ import { CustomerForm, PaymentRequestForm } from '../components'; // Import the 
 
 export default {
   components: { CustomerForm, PaymentRequestForm },
-  methods: {
-    async handleFormSubmit({ data, isUpdate }) {
-      console.log(data);
-      console.log(isUpdate);
-      // ... existing code ...
-      try {
-        if (isUpdate) {
-          // Handle update logic using data object
-          await this.updateCustomer(data);
-        } else {
-          // Handle create logic using data object
-          await this.createCustomer(data);
-        }
-        // Handle success or any other necessary operations
-      } catch (error) {
-        console.error(error);
-        // Handle error
-      } finally {
-        this.closeDrawer();
-      }
-    },
-    async createCustomer(customerData) {
-      // API call to create a new customer
-      // Example API call: await api.post('/customers', customerData);
-    },
-    async updateCustomer(customerData) {
-      // API call to update an existing customer
-      // Example API call: await api.put(`/customers/${customerData.id}`, customerData);
-    },
-    async handleRequestFormSubmit({ data }) {
-      //do something with the data
-      console.log(data);
-      this.closeDrawer();
-    },
-  },
+
   setup(props) {
     // ... existing setup code ...
     const api = useApi();
@@ -188,6 +154,33 @@ export default {
       isPaymentRequestFormVisible.value = false;
       isDrawerOpen.value = false;
       customerData.value = {}; // Clear form data when closing drawer
+    };
+
+    const handleFormSubmit = async ({ data, isUpdate }) => {
+      console.log(data);
+      console.log(isUpdate);
+      // ... existing code ...
+      try {
+        if (isUpdate) {
+          // Handle update logic using data object
+          // await updateCustomer(data);
+        } else {
+          // Handle create logic using data object
+          // await createCustomer(data);
+        }
+        // Handle success or any other necessary operations
+      } catch (error) {
+        console.error(error);
+        // Handle error
+      } finally {
+        closeDrawer();
+      }
+    };
+
+    const handleRequestFormSubmit = async ({ data }) => {
+      //do something with the data
+      console.log(data);
+      closeDrawer();
     };
 
     // ... existing methods ...
@@ -245,6 +238,8 @@ export default {
       handleSearch,
       handleRiskAction,
       fetchData,
+      handleFormSubmit,
+      handleRequestFormSubmit,
     };
   },
 };

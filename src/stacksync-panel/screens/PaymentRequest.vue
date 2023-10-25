@@ -108,40 +108,7 @@ import { PaymentRequestForm } from '../components'; // Import the form component
 
 export default {
   components: { PaymentRequestForm },
-  methods: {
-    async handleFormSubmit({ data, isUpdate }) {
-      console.log(data);
-      console.log(isUpdate);
-      // ... existing code ...
-      try {
-        if (isUpdate) {
-          // Handle update logic using data object
-          await this.updatePaymentRequest(data);
-        } else {
-          // Handle create logic using data object
-          await this.createPaymentRequest(data);
-        }
-        // Handle success or any other necessary operations
-      } catch (error) {
-        console.error(error);
-        // Handle error
-      } finally {
-        this.closeDrawer();
-      }
-    },
-    async createPaymentRequest(paymentRequestData) {
-      // API call to create a new payment request
-      // Example API call: await api.post('/payment-requests', paymentRequestData);
-    },
-    async updatePaymentRequest(paymentRequestData) {
-      // API call to update an existing payment request
-      // Example API call: await api.put(`/payment-requests/${paymentRequestData.id}`, paymentRequestData);
-    },
-    async archivePaymentRequest(paymentRequest) {
-      // API call to delete a payment request
-      // Example API call: await api.delete(`/payment-requests/${paymentRequest.id}`);
-    },
-  },
+
   setup() {
     const api = useApi();
 
@@ -176,6 +143,31 @@ export default {
       paymentRequestData.value = {}; // Clear form data when closing drawer
     };
 
+    const handleFormSubmit = async ({ data, isUpdate }) => {
+      console.log(data);
+      console.log(isUpdate);
+      // ... existing code ...
+      try {
+        if (isUpdate) {
+          // Handle update logic using data object
+          // await updatePaymentRequest(data);
+        } else {
+          // Handle create logic using data object
+          // await createPaymentRequest(data);
+        }
+        // Handle success or any other necessary operations
+      } catch (error) {
+        console.error(error);
+        // Handle error
+      } finally {
+        closeDrawer();
+      }
+    };
+
+    const archivePaymentRequest = async (paymentRequest) => {
+      // API call to delete a payment request
+      // Example API call: await api.delete(`/payment-requests/${paymentRequest.id}`);
+    };
     // Fetch payment requests from the API
     const fetchData = async () => {
       isLoading.value = true;
@@ -208,8 +200,10 @@ export default {
       searchTerm,
       openCreateForm,
       openPaymentRequestOptions,
+      archivePaymentRequest,
       closeDrawer,
       handleSearch,
+      handleFormSubmit,
       fetchData,
     };
   },

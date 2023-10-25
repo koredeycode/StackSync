@@ -4,7 +4,7 @@ export default {
   id: 'stacksync-panel',
   name: 'Stack Sync',
   icon: 'payment',
-  description: 'Manage your Paystack Integration from Directus',
+  description: 'Manage your Paystack Integration from Directus!',
   options: [
     {
       field: 'type',
@@ -17,7 +17,7 @@ export default {
           choices: [
             { text: 'Manage Customers', value: 'customers' },
             { text: 'Manage Products', value: 'products' },
-            { text: 'Manage Payment Request', value: 'payment_request' },
+            { text: 'Manage Payment Request', value: 'payment_requests' },
             { text: 'Manage Integration', value: 'integration' },
           ],
         },

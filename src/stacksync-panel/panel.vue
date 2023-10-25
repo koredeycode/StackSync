@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import { Customer, Product, PaymentRequest } from './screens';
+import { Customer, Product, PaymentRequest, Integration } from './screens';
 
 export default {
-  components: { Customer, Product, PaymentRequest },
+  components: { Customer, Product, PaymentRequest, Integration },
   props: {
     showHeader: {
       type: Boolean,
@@ -24,7 +24,8 @@ export default {
       componentMap: {
         customers: 'Customer',
         products: 'Product',
-        payment_request: 'PaymentRequest',
+        payment_requests: 'PaymentRequest',
+        integration: 'Integration',
       },
     };
   },
