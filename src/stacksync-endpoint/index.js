@@ -68,12 +68,8 @@ export default {
     router.get('/paymentrequests/:id_or_code', fetchPaymentRequest);
 
     router.post('/paymentrequests', auth, createPaymentRequest);
-    router.post(
-      '/paymentrequests/:id_or_code/archive',
-      auth,
-      archivePaymentRequest,
-    );
-    router.post('/paymentrequests/:id_or_code/notify', auth, sendNotification);
+    router.post('/paymentrequests/:code/archive', auth, archivePaymentRequest);
+    router.post('/paymentrequests/:code/notify', auth, sendNotification);
 
     router.put('/paymentrequests/:id_or_code', auth, updatePaymentRequest);
   },

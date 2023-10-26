@@ -61,9 +61,9 @@ const fetchPaymentRequest = async (req, res) => {
 
 const archivePaymentRequest = async (req, res) => {
   try {
-    const { id_or_code } = req.params;
+    const { code } = req.params;
 
-    const response = await api.post(`/paymentrequest/${id_or_code}/archive`);
+    const response = await api.post(`/paymentrequest/archive/${code}`);
 
     res.status(200).json(response.data);
   } catch (error) {
@@ -74,9 +74,9 @@ const archivePaymentRequest = async (req, res) => {
 
 const sendNotification = async (req, res) => {
   try {
-    const { id_or_code } = req.params;
+    const { code } = req.params;
 
-    const response = await api.post(`/paymentrequest/${id_or_code}/notify`);
+    const response = await api.post(`/paymentrequest/notify/${code}`);
 
     res.status(200).json(response.data);
   } catch (error) {

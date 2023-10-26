@@ -225,7 +225,6 @@ export default {
       isLoading.value = true;
       try {
         const response = await api.get('/stacksync-endpoint/customers');
-        console.log(response.data);
         totalCustomers.value = response.data.data;
       } catch (e) {
         error.value = e;

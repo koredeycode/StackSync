@@ -11,6 +11,7 @@ export default {
       name: 'Panel Type',
       type: 'string',
       meta: {
+        note: 'Select the panel you want to view',
         interface: 'select-dropdown',
         width: 'full',
         options: {
@@ -25,6 +26,6 @@ export default {
     },
   ],
   component: PanelComponent,
-  // minWidth: 30,
-  // minHeight: 20,
+  minWidth: 30,
+  minHeight: 20,
 };

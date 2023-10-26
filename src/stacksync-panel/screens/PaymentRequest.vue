@@ -56,7 +56,7 @@
             <div class="dropdown-content">
               <div @click="openPaymentRequestOptions(request)">Edit</div>
               <div @click="archivePaymentRequest(request)">Archive</div>
-              <div @click="notifyPaymentRequest">Notify</div>
+              <div @click="notifyPaymentRequest(request)">Notify</div>
               <!-- Add more options as needed -->
             </div>
           </div>
@@ -189,9 +189,10 @@ export default {
       // API call to delete a payment request
       // Example API call: await api.delete(`/payment-requests/${paymentRequest.id}`);
       isLoading.value = true;
+      console.log(paymentRequest);
       try {
         await api.post(
-          `/stacksync-endpoint/paymentrequests/${paymentRequest.id}/archive`,
+          `/stacksync-endpoint/paymentrequests/${paymentRequest.request_code}/archive`,
         );
         const index = totalPaymentRequests.value.findIndex(
           (request) => request.id === paymentRequest.id,
@@ -210,9 +211,10 @@ export default {
       // API call to notify a payment request
       // Example API call: await api.post(`/payment-requests/${paymentRequest.id}/notify`);
       isLoading.value = true;
+      console.log(paymentRequest);
       try {
         await api.post(
-          `/stacksync-endpoint/paymentrequests/${paymentRequest.id}/notify`,
+          `/stacksync-endpoint/paymentrequests/${paymentRequest.request_code}/notify`,
         );
         // Handle success or any other necessary operations
       } catch (e) {
@@ -227,7 +229,6 @@ export default {
       isLoading.value = true;
       try {
         const response = await api.get('/stacksync-endpoint/paymentrequests');
-        console.log(response.data);
         totalPaymentRequests.value = response.data.data;
       } catch (e) {
         error.value = e;
