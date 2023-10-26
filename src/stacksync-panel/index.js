@@ -25,6 +25,6 @@ export default {
     },
   ],
   component: PanelComponent,
-  minWidth: 30,
-  minHeight: 22,
+  // minWidth: 30,
+  // minHeight: 20,
 };

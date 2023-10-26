@@ -47,25 +47,22 @@
 <script>
 export default {
   props: {
-    customerData: {
+    request: {
       type: Object,
       default: () => ({}),
     },
   },
   data() {
     return {
-      customer: { ...this.customerData },
       requestData: {
-        amount: 0,
-        description: '',
-        'due-date': '',
-        customer: this.customerData.id || '',
+        ...this.request,
+        customer: this.request?.customer?.id || '',
       },
     };
   },
   computed: {
     isDisabled() {
-      return !!this.customer.id;
+      return !!this.request?.customer?.id;
     },
   },
   methods: {
@@ -82,7 +79,7 @@ export default {
         amount: 0,
         description: '',
         'due-date': '',
-        customer: this.customer.id || '',
+        customer: '',
       };
     },
   },

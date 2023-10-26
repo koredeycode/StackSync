@@ -2,7 +2,11 @@
   <div class="customer-list">
     <div class="top-div">
       <div>
-        <input type="email" v-model="searchTerm" placeholder="Search..." />
+        <input
+          type="email"
+          v-model="searchTerm"
+          placeholder="Search by email or customer code"
+        />
         <button class="btn" @click="handleSearch">Search</button>
       </div>
       <button class="btn" @click="openCreateForm">New Customer</button>
@@ -24,6 +28,7 @@
       <thead>
         <!-- ... -->
         <tr>
+          <th>ID</th>
           <th>Name</th>
           <th>Email</th>
           <th>Phone</th>
@@ -31,7 +36,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="customer in totalCustomers" :key="customer.id">
+        <tr
+          v-for="customer in totalCustomers"
+          :key="customer.id"
+          :class="{ 'text-red': customer.risk_action === 'deny' }"
+        >
+          <td>{{ customer.id }}</td>
           <td>{{ `${customer.first_name} ${customer.last_name}` }}</td>
           <td>{{ customer.email }}</td>
           <td>{{ customer.phone }}</td>
@@ -71,6 +81,7 @@
       <div v-if="error">
         <p class="error-message">{{ error }}</p>
       </div>
+      <div><button @click="closeOverlay">Close</button></div>
     </div>
     <div
       class="overlay"
@@ -102,7 +113,7 @@
       <PaymentRequestForm
         v-else
         @request-form-submit="handleRequestFormSubmit"
-        :customerData="customerData"
+        :request="{ customer: { id: customerData.id } }"
       />
     </div>
   </div>
@@ -157,8 +168,8 @@ export default {
     };
 
     const handleFormSubmit = async ({ data, isUpdate }) => {
-      console.log(data);
-      console.log(isUpdate);
+      isLoading.value = true;
+
       // ... existing code ...
       try {
         if (isUpdate) {
@@ -184,21 +195,27 @@ export default {
           totalCustomers.value.unshift(newData.data);
         }
         // Handle success or any other necessary operations
-      } catch (error) {
-        console.error(error);
+      } catch (e) {
+        console.error(e);
         // Handle error
+        error.value = e;
       } finally {
+        isLoading.value = false;
         closeDrawer();
       }
     };
 
     const handleRequestFormSubmit = async ({ data }) => {
+      isLoading.value = true;
+
       try {
         await api.post('/stacksync-endpoint/paymentrequests', data);
-      } catch (error) {
-        console.error(error);
+      } catch (e) {
+        console.error(e);
+        error.value = e;
         // Handle error
       } finally {
+        isLoading.value = false;
         closeDrawer();
       }
     };
@@ -235,6 +252,7 @@ export default {
     };
 
     const handleRiskAction = async (customer) => {
+      isLoading.value = true;
       try {
         const risk_action =
           customer.risk_action === 'deny' ? 'default' : 'deny';
@@ -255,10 +273,17 @@ export default {
         }
       } catch (e) {
         error.value = e;
+      } finally {
+        isLoading.value = false;
       }
     };
     onMounted(fetchData);
     // watch(props.type, fetchData);
+
+    const closeOverlay = () => {
+      error.value = null;
+      isLoading.value = false;
+    };
 
     return {
       // ... existing return values ...
@@ -279,6 +304,7 @@ export default {
       fetchData,
       handleFormSubmit,
       handleRequestFormSubmit,
+      closeOverlay,
     };
   },
 };
@@ -427,6 +453,7 @@ th {
   height: 100%;
 
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 
@@ -452,7 +479,8 @@ th {
   }
 }
 
-.error-message {
+.error-message,
+.text-red td {
   color: red;
 }
 </style>

@@ -7,7 +7,7 @@ import {
   getCustomers,
   createCustomer,
   updateCustomer,
-  getCustomerById,
+  getCustomerByEmailOrCode,
   setRiskAction,
 } from './controllers/customers';
 
@@ -20,8 +20,11 @@ import {
 
 import {
   createPaymentRequest,
-  listPaymentRequest,
+  listPaymentRequests,
   updatePaymentRequest,
+  fetchPaymentRequest,
+  archivePaymentRequest,
+  sendNotification,
 } from './controllers/payment_requests';
 
 import auth from './middleware';
@@ -44,23 +47,34 @@ export default {
     );
 
     //Customer endpoints
-    //Id here can be paystack customer code, email or id
-    //Named id for convenience, correct format sent from the frontend
     router.get('/customers', getCustomers);
+    router.get('/customers/:email_or_code', getCustomerByEmailOrCode);
+
     router.post('/customers', auth, createCustomer);
-    router.put('/customers/:id', auth, updateCustomer);
-    router.get('/customers/:id', getCustomerById);
-    router.post('/customers/:id/set_risk_action', auth, setRiskAction);
+    router.post('/customers/:code/set_risk_action', auth, setRiskAction);
+
+    router.put('/customers/:code', auth, updateCustomer);
 
     //Product endpoints
-    router.post('/products', auth, createProduct);
     router.get('/products', listProducts);
     router.get('/products/:id', fetchProduct);
+
+    router.post('/products', auth, createProduct);
+
     router.put('/products/:id', auth, updateProduct);
 
     //Payment Request endpoints
+    router.get('/paymentrequests', listPaymentRequests);
+    router.get('/paymentrequests/:id_or_code', fetchPaymentRequest);
+
     router.post('/paymentrequests', auth, createPaymentRequest);
-    router.get('/paymentrequests', listPaymentRequest);
+    router.post(
+      '/paymentrequests/:id_or_code/archive',
+      auth,
+      archivePaymentRequest,
+    );
+    router.post('/paymentrequests/:id_or_code/notify', auth, sendNotification);
+
     router.put('/paymentrequests/:id_or_code', auth, updatePaymentRequest);
   },
 };

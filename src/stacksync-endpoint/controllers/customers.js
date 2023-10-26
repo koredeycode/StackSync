@@ -9,13 +9,13 @@ const getCustomers = async (req, res) => {
   }
 };
 
-const getCustomerById = async (req, res) => {
+const getCustomerByEmailOrCode = async (req, res) => {
   try {
-    const customerId = req.params.id;
-    const response = await api.get(`/customer/${customerId}`);
+    const { email_or_code } = req.params;
+    const response = await api.get(`/customer/${email_or_code}`);
     res.status(200).json(response.data);
   } catch (error) {
-    if (error.response && error.response.status === 404) {
+    if (error.response?.status === 404) {
       // Handle the case where the customer is not found
       res.status(404).json({ error: 'Customer not found' });
     } else {
@@ -36,13 +36,13 @@ const createCustomer = async (req, res) => {
 
 const updateCustomer = async (req, res) => {
   try {
-    const customerId = req.params.id;
+    const { code } = req.params;
     const updatedData = req.body; // Assuming updated data is sent in the request body
 
-    const response = await api.put(`/customer/${customerId}`, updatedData);
+    const response = await api.put(`/customer/${code}`, updatedData);
     res.status(200).json(response.data);
   } catch (error) {
-    if (error.response && error.response.status === 404) {
+    if (error.response?.status === 404) {
       // Handle the case where the customer is not found
       res.status(404).json({ error: 'Customer not found' });
     } else {
@@ -54,10 +54,10 @@ const updateCustomer = async (req, res) => {
 
 const setRiskAction = async (req, res) => {
   try {
-    const customerId = req.params.id;
+    const { code } = req.params;
     const { risk_action } = req.body;
     const payload = {
-      customer: customerId,
+      customer: code,
       risk_action,
     };
     const response = await api.post('/customer/set_risk_action', payload);
@@ -71,6 +71,6 @@ export {
   getCustomers,
   createCustomer,
   updateCustomer,
-  getCustomerById,
+  getCustomerByEmailOrCode,
   setRiskAction,
 };

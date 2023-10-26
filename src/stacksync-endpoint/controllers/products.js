@@ -2,16 +2,16 @@ import api from '../api';
 
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price, currency, unlimited, quantity } =
-      req.body;
+    const { name, description, price, unlimited, quantity } = req.body;
     const productData = {
       name,
       description,
-      price,
-      currency,
+      price: price * 100,
       unlimited,
       quantity,
     };
+
+    productData.currency = process.env.PAYSTACK_INTEGRATION_CURRENCY;
 
     const response = await api.post('/product', productData);
     res.status(201).json(response.data);

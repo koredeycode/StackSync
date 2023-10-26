@@ -2,7 +2,11 @@
   <div class="product-list">
     <div class="top-div">
       <div>
-        <input type="text" v-model="searchTerm" placeholder="Search..." />
+        <input
+          type="text"
+          v-model="searchTerm"
+          placeholder="Search by product id"
+        />
         <button class="btn" @click="handleSearch">Search</button>
       </div>
       <button class="btn" @click="openCreateForm">New Product</button>
@@ -23,6 +27,7 @@
       <!-- Table headers -->
       <thead>
         <tr>
+          <th>ID</th>
           <th>Name</th>
           <th>Description</th>
           <th>Price</th>
@@ -33,10 +38,11 @@
       </thead>
       <tbody>
         <tr v-for="product in totalProducts" :key="product.id">
+          <td>{{ product.id }}</td>
           <td>{{ product.name }}</td>
           <td>{{ product.description }}</td>
-          <td>{{ product.price }}</td>
-          <td>{{ product.quantity }}</td>
+          <td>{{ product.price / 100 }}</td>
+          <td>{{ product.unlimited ? 'Unlimited' : product.quantity }}</td>
           <td>{{ product.in_stock ? 'Yes' : 'No' }}</td>
           <!-- Menu button for update and delete options -->
           <div class="dropdown">
@@ -68,6 +74,7 @@
       <div v-if="error">
         <p class="error-message">{{ error }}</p>
       </div>
+      <div><button @click="closeOverlay">Close</button></div>
     </div>
     <div
       class="overlay"
@@ -141,22 +148,38 @@ export default {
     };
 
     const handleFormSubmit = async ({ data, isUpdate }) => {
-      console.log(data);
-      console.log(isUpdate);
-      // ... existing code ...
+      isLoading.value = true;
+
       try {
         if (isUpdate) {
           // Handle update logic using data object
           // await updateProduct(data);
+          const { data: updatedData } = await api.put(
+            `/stacksync-endpoint/products/${data.id}`,
+            data,
+          );
+          const index = totalProducts.value.findIndex(
+            (product) => product.id === updatedData.data.id,
+          );
+          if (index !== -1) {
+            totalProducts.value[index] = updatedData.data;
+          }
         } else {
           // Handle create logic using data object
           // await createProduct(data);
+          const { data: newData } = await api.post(
+            '/stacksync-endpoint/products',
+            data,
+          );
+          totalProducts.value.unshift(newData.data);
         }
         // Handle success or any other necessary operations
-      } catch (error) {
-        console.error(error);
+      } catch (e) {
+        error.value = e;
+        console.error(e);
         // Handle error
       } finally {
+        isLoading.value = false;
         closeDrawer();
       }
     };
@@ -178,6 +201,24 @@ export default {
     const handleSearch = async () => {
       console.log(searchTerm);
       // Handle search logic (if needed)
+      isLoading.value = true;
+      try {
+        const { data } = await api.get(
+          `/stacksync-endpoint/products/${searchTerm.value}`,
+        );
+        if (data?.data) {
+          totalProducts.value = [data.data];
+        }
+      } catch (e) {
+        error.value = e;
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
+    const closeOverlay = () => {
+      error.value = null;
+      isLoading.value = false;
     };
 
     onMounted(fetchData);
@@ -198,6 +239,7 @@ export default {
       handleSearch,
       handleFormSubmit,
       fetchData,
+      closeOverlay,
     };
   },
 };
@@ -346,6 +388,7 @@ th {
   height: 100%;
 
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 

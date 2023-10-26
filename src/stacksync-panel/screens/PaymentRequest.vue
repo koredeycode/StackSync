@@ -2,7 +2,11 @@
   <div class="payment-request-list">
     <div class="top-div">
       <div>
-        <input type="text" v-model="searchTerm" placeholder="Search..." />
+        <input
+          type="text"
+          v-model="searchTerm"
+          placeholder="Search by id or code..."
+        />
         <button class="btn" @click="handleSearch">Search</button>
       </div>
       <button class="btn" @click="openCreateForm">New Payment Request</button>
@@ -31,7 +35,7 @@
       </thead>
       <tbody>
         <tr v-for="request in totalPaymentRequests" :key="request.id">
-          <td>{{ request.amount }}</td>
+          <td>{{ request.amount / 100 }}</td>
           <td>{{ request.status }}</td>
           <td>{{ request.customer.id }}</td>
           <td>{{ request.paid ? 'Yes' : 'No' }}</td>
@@ -52,6 +56,7 @@
             <div class="dropdown-content">
               <div @click="openPaymentRequestOptions(request)">Edit</div>
               <div @click="archivePaymentRequest(request)">Archive</div>
+              <div @click="notifyPaymentRequest">Notify</div>
               <!-- Add more options as needed -->
             </div>
           </div>
@@ -67,6 +72,7 @@
       <div v-if="error">
         <p class="error-message">{{ error }}</p>
       </div>
+      <div><button @click="closeOverlay">Close</button></div>
     </div>
     <div
       class="overlay"
@@ -93,6 +99,7 @@
       <PaymentRequestForm
         v-if="isCreateFormVisible || isUpdateFormVisible"
         @request-form-submit="handleFormSubmit"
+        :request="paymentRequestData"
       />
     </div>
   </div>
@@ -105,7 +112,6 @@ import { PaymentRequestForm } from '../components'; // Import the form component
 
 export default {
   components: { PaymentRequestForm },
-
   setup() {
     const api = useApi();
 
@@ -144,19 +150,37 @@ export default {
       console.log(data);
       console.log(isUpdate);
       // ... existing code ...
+      isLoading.value = true;
       try {
         if (isUpdate) {
           // Handle update logic using data object
           // await updatePaymentRequest(data);
+          const { data: updatedData } = await api.put(
+            `/stacksync-endpoint/paymentrequests/${data.id}`,
+            data,
+          );
+          const index = totalPaymentRequests.value.findIndex(
+            (request) => request.id === updatedData.data.id,
+          );
+          if (index !== -1) {
+            totalPaymentRequests.value[index] = updatedData.data;
+          }
         } else {
           // Handle create logic using data object
           // await createPaymentRequest(data);
+          const { data: newData } = await api.post(
+            '/stacksync-endpoint/paymentrequests',
+            data,
+          );
+          totalPaymentRequests.value.unshift(newData.data);
         }
         // Handle success or any other necessary operations
-      } catch (error) {
-        console.error(error);
+      } catch (e) {
+        console.error(e);
         // Handle error
+        error.value = e;
       } finally {
+        isLoading.value = false;
         closeDrawer();
       }
     };
@@ -164,7 +188,40 @@ export default {
     const archivePaymentRequest = async (paymentRequest) => {
       // API call to delete a payment request
       // Example API call: await api.delete(`/payment-requests/${paymentRequest.id}`);
+      isLoading.value = true;
+      try {
+        await api.post(
+          `/stacksync-endpoint/paymentrequests/${paymentRequest.id}/archive`,
+        );
+        const index = totalPaymentRequests.value.findIndex(
+          (request) => request.id === paymentRequest.id,
+        );
+        if (index !== -1) {
+          totalPaymentRequests.value.splice(index, 1);
+        }
+      } catch (e) {
+        error.value = e;
+      } finally {
+        isLoading.value = false;
+      }
     };
+
+    const notifyPaymentRequest = async (paymentRequest) => {
+      // API call to notify a payment request
+      // Example API call: await api.post(`/payment-requests/${paymentRequest.id}/notify`);
+      isLoading.value = true;
+      try {
+        await api.post(
+          `/stacksync-endpoint/paymentrequests/${paymentRequest.id}/notify`,
+        );
+        // Handle success or any other necessary operations
+      } catch (e) {
+        error.value = e;
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
     // Fetch payment requests from the API
     const fetchData = async () => {
       isLoading.value = true;
@@ -182,8 +239,24 @@ export default {
     const handleSearch = async () => {
       console.log(searchTerm);
       // Implement search functionality based on the searchTerm value
+      isLoading.value = true;
+      try {
+        const { data } = await api.get(
+          `/stacksync-endpoint/paymentrequests/${searchTerm.value}`,
+        );
+        if (data?.data) {
+          totalPaymentRequests.value = [data.data];
+        }
+      } catch (e) {
+        error.value = e;
+      } finally {
+        isLoading.value = false;
+      }
     };
-
+    const closeOverlay = () => {
+      error.value = null;
+      isLoading.value = false;
+    };
     onMounted(fetchData);
 
     return {
@@ -198,10 +271,12 @@ export default {
       openCreateForm,
       openPaymentRequestOptions,
       archivePaymentRequest,
+      notifyPaymentRequest,
       closeDrawer,
       handleSearch,
       handleFormSubmit,
       fetchData,
+      closeOverlay,
     };
   },
 };
@@ -352,6 +427,7 @@ th {
   height: 100%;
 
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 
