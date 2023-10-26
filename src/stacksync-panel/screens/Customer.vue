@@ -193,9 +193,14 @@ export default {
     };
 
     const handleRequestFormSubmit = async ({ data }) => {
-      //do something with the data
-      console.log(data);
-      closeDrawer();
+      try {
+        await api.post('/stacksync-endpoint/paymentrequests', data);
+      } catch (error) {
+        console.error(error);
+        // Handle error
+      } finally {
+        closeDrawer();
+      }
     };
 
     // ... existing methods ...
@@ -235,11 +240,16 @@ export default {
           customer.risk_action === 'deny' ? 'default' : 'deny';
         const action = risk_action === 'default' ? 'Whitelist' : 'Blacklist';
         if (confirm(`Are you sure you want to ${action} this customer?`)) {
-          const response = await api.post(
+          const { data } = await api.post(
             `/stacksync-endpoint/customers/${customer.customer_code}/set_risk_action`,
             { risk_action },
           );
-          console.log(response.data);
+          const index = totalCustomers.value.findIndex(
+            (customer) => customer.id === data.data.id,
+          );
+          if (index !== -1) {
+            totalCustomers.value[index] = data.data;
+          }
         } else {
           return;
         }

@@ -23,20 +23,17 @@
       <!-- Table headers -->
       <thead>
         <tr>
-          <th>ID</th>
           <th>Amount</th>
-          <th>Customer Id</th>
           <th>Status</th>
+          <th>Customer Id</th>
           <th>Paid</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="request in totalPaymentRequests" :key="request.id">
-          <td>{{ request.id }}</td>
           <td>{{ request.amount }}</td>
           <td>{{ request.status }}</td>
-          <td>{{ request.customer }}</td>
-          <td>{{ request.status }}</td>
+          <td>{{ request.customer.id }}</td>
           <td>{{ request.paid ? 'Yes' : 'No' }}</td>
           <!-- Menu button for update and other options -->
           <div class="dropdown">

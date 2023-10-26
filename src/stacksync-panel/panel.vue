@@ -40,6 +40,7 @@ export default {
   width: 100%;
   height: 100%;
   padding: 10px;
+  overflow: scroll;
   /* display: flex;
 	flex-direction: column;
 	justify-content: center; */
