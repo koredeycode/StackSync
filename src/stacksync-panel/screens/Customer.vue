@@ -164,9 +164,24 @@ export default {
         if (isUpdate) {
           // Handle update logic using data object
           // await updateCustomer(data);
+          const { data: updatedData } = await api.put(
+            `/stacksync-endpoint/customers/${data.customer_code}`,
+            data,
+          );
+          const index = totalCustomers.value.findIndex(
+            (customer) => customer.id === updatedData.data.id,
+          );
+          if (index !== -1) {
+            totalCustomers.value[index] = updatedData.data;
+          }
         } else {
           // Handle create logic using data object
           // await createCustomer(data);
+          const { data: newData } = await api.post(
+            '/stacksync-endpoint/customers',
+            data,
+          );
+          totalCustomers.value.unshift(newData.data);
         }
         // Handle success or any other necessary operations
       } catch (error) {
@@ -199,15 +214,29 @@ export default {
 
     const handleSearch = async () => {
       console.log(searchTerm);
+      isLoading.value = true;
+      try {
+        const { data } = await api.get(
+          `/stacksync-endpoint/customers/${searchTerm.value}`,
+        );
+        if (data?.data) {
+          totalCustomers.value = [data.data];
+        }
+      } catch (e) {
+        error.value = e;
+      } finally {
+        isLoading.value = false;
+      }
     };
 
     const handleRiskAction = async (customer) => {
       try {
-        const risk_action = customer.risk_action === 'deny' ? 'allow' : 'deny';
-        const action = risk_action === 'allow' ? 'Whitelist' : 'Blacklist';
+        const risk_action =
+          customer.risk_action === 'deny' ? 'default' : 'deny';
+        const action = risk_action === 'default' ? 'Whitelist' : 'Blacklist';
         if (confirm(`Are you sure you want to ${action} this customer?`)) {
-          const response = await api.put(
-            `/stacksync-endpoint/${customer.id}/set_risk_action`,
+          const response = await api.post(
+            `/stacksync-endpoint/customers/${customer.customer_code}/set_risk_action`,
             { risk_action },
           );
           console.log(response.data);

@@ -1,6 +1,6 @@
 <template>
   <div>Integration</div>
-  <div>{{ data.status }}</div>
+  <div>{{ data?.status }}</div>
 </template>
 
 <script>
@@ -14,11 +14,11 @@ export default {
 
     const fetchData = async () => {
       const response = await api.get('stacksync-endpoint/status');
+      console.log(response);
       data.value = response.data;
     };
-    onMounted(() => {
-      fetchData();
-    });
+    onMounted(fetchData);
+    console.log(data);
     return { data };
   },
 };
