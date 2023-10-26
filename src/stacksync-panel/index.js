@@ -15,10 +15,10 @@ export default {
         width: 'full',
         options: {
           choices: [
+            { text: 'Manage Integration', value: 'integration' },
             { text: 'Manage Customers', value: 'customers' },
             { text: 'Manage Products', value: 'products' },
             { text: 'Manage Payment Request', value: 'payment_requests' },
-            { text: 'Manage Integration', value: 'integration' },
           ],
         },
       },
