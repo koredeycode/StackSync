@@ -13,8 +13,7 @@ const createPaymentRequest = async (req, res) => {
 
     res.status(200).json(response.data);
   } catch (error) {
-    console.error(error);
-    res.status(500).json(error.response.data);
+    res.status(500).json(error);
   }
 };
 
@@ -23,7 +22,7 @@ const listPaymentRequests = async (req, res) => {
     const response = await api.get('/paymentrequest');
     res.status(200).json(response.data);
   } catch (error) {
-    res.status(500).json(error.response.data);
+    res.status(500).json(error);
   }
 };
 
@@ -41,8 +40,7 @@ const updatePaymentRequest = async (req, res) => {
 
     res.status(200).json(response.data);
   } catch (error) {
-    console.error(error);
-    res.status(500).json(error.response.data);
+    res.status(500).json(error);
   }
 };
 
@@ -54,8 +52,7 @@ const fetchPaymentRequest = async (req, res) => {
 
     res.status(200).json(response.data);
   } catch (error) {
-    console.error(error);
-    res.status(500).json(error.response.data);
+    res.status(500).json(error);
   }
 };
 
@@ -67,8 +64,7 @@ const archivePaymentRequest = async (req, res) => {
 
     res.status(200).json(response.data);
   } catch (error) {
-    console.error(error);
-    res.status(500).json(error.response.data);
+    res.status(500).json(error);
   }
 };
 
@@ -80,8 +76,7 @@ const sendNotification = async (req, res) => {
 
     res.status(200).json(response.data);
   } catch (error) {
-    console.error(error);
-    res.status(500).json(error.response.data);
+    res.status(500).json(error);
   }
 };
 

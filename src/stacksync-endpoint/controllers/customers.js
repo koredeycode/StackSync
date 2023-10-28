@@ -16,10 +16,8 @@ const getCustomerByEmailOrCode = async (req, res) => {
     res.status(200).json(response.data);
   } catch (error) {
     if (error.response?.status === 404) {
-      // Handle the case where the customer is not found
       res.status(404).json({ error: 'Customer not found' });
     } else {
-      // Handle other types of errors
       res.status(500).json(error);
     }
   }
@@ -37,16 +35,14 @@ const createCustomer = async (req, res) => {
 const updateCustomer = async (req, res) => {
   try {
     const { code } = req.params;
-    const updatedData = req.body; // Assuming updated data is sent in the request body
+    const updatedData = req.body;
 
     const response = await api.put(`/customer/${code}`, updatedData);
     res.status(200).json(response.data);
   } catch (error) {
     if (error.response?.status === 404) {
-      // Handle the case where the customer is not found
       res.status(404).json({ error: 'Customer not found' });
     } else {
-      // Handle other types of errors
       res.status(500).json(error);
     }
   }

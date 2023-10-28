@@ -110,31 +110,29 @@
 <script>
 import { useApi } from '@directus/extensions-sdk';
 import { ref, onMounted } from 'vue';
-import { ProductForm } from '../components'; // Import the form component
+import { ProductForm } from '../components';
 
 export default {
   components: { ProductForm },
   setup() {
     const api = useApi();
 
-    // ... existing setup code ...
-    const totalProducts = ref([]); // Placeholder for product data
+    const totalProducts = ref([]);
     const isLoading = ref(false);
     const error = ref(null);
     const isDrawerOpen = ref(false);
     const isCreateFormVisible = ref(false);
     const isUpdateFormVisible = ref(false);
-    const productData = ref({}); // Data for the form
+    const productData = ref({});
     const searchTerm = ref('');
 
     const openCreateForm = () => {
       isCreateFormVisible.value = true;
       isDrawerOpen.value = true;
-      productData.value = {}; // Clear form data for new product
+      productData.value = {};
     };
 
     const openProductOptions = (product) => {
-      // Set form data for updating product
       productData.value = { ...product };
       isUpdateFormVisible.value = true;
       isDrawerOpen.value = true;
@@ -144,7 +142,7 @@ export default {
       isCreateFormVisible.value = false;
       isUpdateFormVisible.value = false;
       isDrawerOpen.value = false;
-      productData.value = {}; // Clear form data when closing drawer
+      productData.value = {};
     };
 
     const handleFormSubmit = async ({ data, isUpdate }) => {
@@ -152,8 +150,6 @@ export default {
 
       try {
         if (isUpdate) {
-          // Handle update logic using data object
-          // await updateProduct(data);
           const { data: updatedData } = await api.put(
             `/stacksync-endpoint/products/${data.id}`,
             data,
@@ -165,26 +161,20 @@ export default {
             totalProducts.value[index] = updatedData.data;
           }
         } else {
-          // Handle create logic using data object
-          // await createProduct(data);
           const { data: newData } = await api.post(
             '/stacksync-endpoint/products',
             data,
           );
           totalProducts.value.unshift(newData.data);
         }
-        // Handle success or any other necessary operations
       } catch (e) {
         error.value = e;
-        console.error(e);
-        // Handle error
       } finally {
         isLoading.value = false;
         closeDrawer();
       }
     };
 
-    // ... existing methods ...
     const fetchData = async () => {
       isLoading.value = true;
       try {
@@ -198,8 +188,6 @@ export default {
     };
 
     const handleSearch = async () => {
-      console.log(searchTerm);
-      // Handle search logic (if needed)
       isLoading.value = true;
       try {
         const { data } = await api.get(
@@ -223,7 +211,6 @@ export default {
     onMounted(fetchData);
 
     return {
-      // ... existing return values ...
       totalProducts,
       isLoading,
       error,

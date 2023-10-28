@@ -23,7 +23,26 @@
         </svg>
       </button>
     </div>
-    <table v-if="!isLoading && totalPaymentRequests.length > 0">
+    <div class="filter-options">
+      <label>
+        <input
+          type="checkbox"
+          v-model="selectedFilters.pending"
+          @change="applyFilters"
+        />
+        Pending
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          v-model="selectedFilters.success"
+          @change="applyFilters"
+        />
+        Successful
+      </label>
+    </div>
+
+    <table v-if="!isLoading && filteredPaymentRequests.length > 0">
       <!-- Table headers -->
       <thead>
         <tr>
@@ -34,7 +53,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="request in totalPaymentRequests" :key="request.id">
+        <tr v-for="request in filteredPaymentRequests" :key="request.id">
           <td>{{ request.amount / 100 }}</td>
           <td>{{ request.status }}</td>
           <td>{{ request.customer.id }}</td>
@@ -63,6 +82,9 @@
         </tr>
       </tbody>
     </table>
+    <p v-else-if="!isLoading && filteredPaymentRequests.length === 0">
+      No payment requests found
+    </p>
     <!-- ... Loading and error messages ... -->
     <div class="loading-overlay" v-if="isLoading || error">
       <div v-if="isLoading">
@@ -107,33 +129,36 @@
 
 <script>
 import { useApi } from '@directus/extensions-sdk';
-import { ref, onMounted } from 'vue';
-import { PaymentRequestForm } from '../components'; // Import the form component
+import { ref, onMounted, reactive } from 'vue';
+import { PaymentRequestForm } from '../components';
 
 export default {
   components: { PaymentRequestForm },
   setup() {
     const api = useApi();
 
-    // ... existing setup code ...
     const totalPaymentRequests = ref([]);
+    const filteredPaymentRequests = ref([]);
     const isLoading = ref(false);
     const error = ref(null);
 
     const isDrawerOpen = ref(false);
     const isCreateFormVisible = ref(false);
     const isUpdateFormVisible = ref(false);
-    const paymentRequestData = ref({}); // Data for the form
+    const paymentRequestData = ref({});
     const searchTerm = ref('');
 
+    const selectedFilters = reactive({
+      pending: true,
+      success: true,
+    });
     const openCreateForm = () => {
       isCreateFormVisible.value = true;
       isDrawerOpen.value = true;
-      paymentRequestData.value = {}; // Clear form data for new payment request
+      paymentRequestData.value = {};
     };
 
     const openPaymentRequestOptions = (paymentRequest) => {
-      // Set form data for updating payment request
       paymentRequestData.value = { ...paymentRequest };
       isUpdateFormVisible.value = true;
       isDrawerOpen.value = true;
@@ -143,18 +168,13 @@ export default {
       isCreateFormVisible.value = false;
       isUpdateFormVisible.value = false;
       isDrawerOpen.value = false;
-      paymentRequestData.value = {}; // Clear form data when closing drawer
+      paymentRequestData.value = {};
     };
 
     const handleFormSubmit = async ({ data, isUpdate }) => {
-      console.log(data);
-      console.log(isUpdate);
-      // ... existing code ...
       isLoading.value = true;
       try {
         if (isUpdate) {
-          // Handle update logic using data object
-          // await updatePaymentRequest(data);
           const { data: updatedData } = await api.put(
             `/stacksync-endpoint/paymentrequests/${data.id}`,
             data,
@@ -166,18 +186,15 @@ export default {
             totalPaymentRequests.value[index] = updatedData.data;
           }
         } else {
-          // Handle create logic using data object
-          // await createPaymentRequest(data);
           const { data: newData } = await api.post(
             '/stacksync-endpoint/paymentrequests',
             data,
           );
           totalPaymentRequests.value.unshift(newData.data);
         }
-        // Handle success or any other necessary operations
+
+        applyFilters();
       } catch (e) {
-        console.error(e);
-        // Handle error
         error.value = e;
       } finally {
         isLoading.value = false;
@@ -186,10 +203,8 @@ export default {
     };
 
     const archivePaymentRequest = async (paymentRequest) => {
-      // API call to delete a payment request
-      // Example API call: await api.delete(`/payment-requests/${paymentRequest.id}`);
       isLoading.value = true;
-      console.log(paymentRequest);
+
       try {
         await api.post(
           `/stacksync-endpoint/paymentrequests/${paymentRequest.request_code}/archive`,
@@ -200,6 +215,7 @@ export default {
         if (index !== -1) {
           totalPaymentRequests.value.splice(index, 1);
         }
+        applyFilters();
       } catch (e) {
         error.value = e;
       } finally {
@@ -208,15 +224,12 @@ export default {
     };
 
     const notifyPaymentRequest = async (paymentRequest) => {
-      // API call to notify a payment request
-      // Example API call: await api.post(`/payment-requests/${paymentRequest.id}/notify`);
       isLoading.value = true;
-      console.log(paymentRequest);
+
       try {
         await api.post(
           `/stacksync-endpoint/paymentrequests/${paymentRequest.request_code}/notify`,
         );
-        // Handle success or any other necessary operations
       } catch (e) {
         error.value = e;
       } finally {
@@ -224,12 +237,12 @@ export default {
       }
     };
 
-    // Fetch payment requests from the API
     const fetchData = async () => {
       isLoading.value = true;
       try {
         const response = await api.get('/stacksync-endpoint/paymentrequests');
         totalPaymentRequests.value = response.data.data;
+        applyFilters();
       } catch (e) {
         error.value = e;
       } finally {
@@ -238,8 +251,6 @@ export default {
     };
 
     const handleSearch = async () => {
-      console.log(searchTerm);
-      // Implement search functionality based on the searchTerm value
       isLoading.value = true;
       try {
         const { data } = await api.get(
@@ -248,6 +259,7 @@ export default {
         if (data?.data) {
           totalPaymentRequests.value = [data.data];
         }
+        applyFilters();
       } catch (e) {
         error.value = e;
       } finally {
@@ -260,8 +272,22 @@ export default {
     };
     onMounted(fetchData);
 
+    const applyFilters = () => {
+      filteredPaymentRequests.value = totalPaymentRequests.value.filter(
+        (request) => {
+          if (selectedFilters.pending && request.status === 'pending') {
+            return true;
+          }
+          if (selectedFilters.success && request.status === 'success') {
+            return true;
+          }
+          return false;
+        },
+      );
+    };
+
     return {
-      totalPaymentRequests,
+      filteredPaymentRequests,
       isLoading,
       error,
       isDrawerOpen,
@@ -269,6 +295,7 @@ export default {
       isUpdateFormVisible,
       paymentRequestData,
       searchTerm,
+      selectedFilters,
       openCreateForm,
       openPaymentRequestOptions,
       archivePaymentRequest,
@@ -278,6 +305,7 @@ export default {
       handleFormSubmit,
       fetchData,
       closeOverlay,
+      applyFilters,
     };
   },
 };
@@ -418,6 +446,10 @@ th {
 .refresh:hover,
 .top-div .btn:hover {
   background-color: #f1f1f1;
+}
+.filter-options {
+  display: flex;
+  gap: 1rem;
 }
 
 .loading-overlay {

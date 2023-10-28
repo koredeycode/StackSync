@@ -9,6 +9,7 @@
         />
         <button class="btn" @click="handleSearch">Search</button>
       </div>
+
       <button class="btn" @click="openCreateForm">New Customer</button>
       <button class="refresh" @click="fetchData">
         <svg
@@ -23,7 +24,26 @@
         </svg>
       </button>
     </div>
-    <table v-if="!isLoading && totalCustomers.length > 0">
+    <div class="filter-options">
+      <label>
+        <input
+          type="checkbox"
+          v-model="selectedFilters.blacklist"
+          @change="applyFilters"
+        />
+        Blacklisted
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          v-model="selectedFilters.whitelist"
+          @change="applyFilters"
+        />
+        Whitelisted
+      </label>
+    </div>
+
+    <table v-if="!isLoading && filteredCustomers.length > 0">
       <!-- Table headers -->
       <thead>
         <!-- ... -->
@@ -37,7 +57,7 @@
       </thead>
       <tbody>
         <tr
-          v-for="customer in totalCustomers"
+          v-for="customer in filteredCustomers"
           :key="customer.id"
           :class="{ 'text-red': customer.risk_action === 'deny' }"
         >
@@ -72,6 +92,9 @@
         </tr>
       </tbody>
     </table>
+    <p v-else-if="!isLoading && filteredCustomers.length === 0">
+      No customers found
+    </p>
     <!-- ... Loading and error messages ... -->
     <div class="loading-overlay" v-if="isLoading || error">
       <div v-if="isLoading">
@@ -121,16 +144,16 @@
 
 <script>
 import { useApi } from '@directus/extensions-sdk';
-import { ref, onMounted } from 'vue';
-import { CustomerForm, PaymentRequestForm } from '../components'; // Import the form component
+import { ref, onMounted, reactive } from 'vue';
+import { CustomerForm, PaymentRequestForm } from '../components';
 
 export default {
   components: { CustomerForm, PaymentRequestForm },
 
   setup(props) {
-    // ... existing setup code ...
     const api = useApi();
     const totalCustomers = ref([]);
+    const filteredCustomers = ref([]);
     const isLoading = ref(false);
     const error = ref(null);
 
@@ -138,17 +161,21 @@ export default {
     const isCreateFormVisible = ref(false);
     const isUpdateFormVisible = ref(false);
     const isPaymentRequestFormVisible = ref(false);
-    const customerData = ref({}); // Data for the form
+    const customerData = ref({});
     const searchTerm = ref('');
+
+    const selectedFilters = reactive({
+      blacklist: true,
+      whitelist: true,
+    });
 
     const openCreateForm = () => {
       isCreateFormVisible.value = true;
       isDrawerOpen.value = true;
-      customerData.value = {}; // Clear form data for new customer
+      customerData.value = {};
     };
 
     const openCustomerOptions = (customer) => {
-      // Set form data for updating customer
       customerData.value = { ...customer };
       isUpdateFormVisible.value = true;
       isDrawerOpen.value = true;
@@ -164,17 +191,14 @@ export default {
       isUpdateFormVisible.value = false;
       isPaymentRequestFormVisible.value = false;
       isDrawerOpen.value = false;
-      customerData.value = {}; // Clear form data when closing drawer
+      customerData.value = {};
     };
 
     const handleFormSubmit = async ({ data, isUpdate }) => {
       isLoading.value = true;
 
-      // ... existing code ...
       try {
         if (isUpdate) {
-          // Handle update logic using data object
-          // await updateCustomer(data);
           const { data: updatedData } = await api.put(
             `/stacksync-endpoint/customers/${data.customer_code}`,
             data,
@@ -186,18 +210,16 @@ export default {
             totalCustomers.value[index] = updatedData.data;
           }
         } else {
-          // Handle create logic using data object
-          // await createCustomer(data);
           const { data: newData } = await api.post(
             '/stacksync-endpoint/customers',
             data,
           );
           totalCustomers.value.unshift(newData.data);
         }
-        // Handle success or any other necessary operations
+
+        applyFilters();
       } catch (e) {
-        console.error(e);
-        // Handle error
+
         error.value = e;
       } finally {
         isLoading.value = false;
@@ -211,21 +233,19 @@ export default {
       try {
         await api.post('/stacksync-endpoint/paymentrequests', data);
       } catch (e) {
-        console.error(e);
         error.value = e;
-        // Handle error
       } finally {
         isLoading.value = false;
         closeDrawer();
       }
     };
 
-    // ... existing methods ...
     const fetchData = async () => {
       isLoading.value = true;
       try {
         const response = await api.get('/stacksync-endpoint/customers');
         totalCustomers.value = response.data.data;
+        applyFilters();
       } catch (e) {
         error.value = e;
       } finally {
@@ -234,7 +254,6 @@ export default {
     };
 
     const handleSearch = async () => {
-      console.log(searchTerm);
       isLoading.value = true;
       try {
         const { data } = await api.get(
@@ -243,6 +262,7 @@ export default {
         if (data?.data) {
           totalCustomers.value = [data.data];
         }
+        applyFilters();
       } catch (e) {
         error.value = e;
       } finally {
@@ -270,6 +290,7 @@ export default {
         } else {
           return;
         }
+        applyFilters();
       } catch (e) {
         error.value = e;
       } finally {
@@ -277,16 +298,29 @@ export default {
       }
     };
     onMounted(fetchData);
-    // watch(props.type, fetchData);
 
     const closeOverlay = () => {
       error.value = null;
       isLoading.value = false;
     };
 
+    const applyFilters = () => {
+      const filteredData = totalCustomers.value.filter((customer) => {
+        if (selectedFilters.blacklist && selectedFilters.whitelist) {
+          return true;
+        } else if (selectedFilters.blacklist) {
+          return customer.risk_action === 'deny';
+        } else if (selectedFilters.whitelist) {
+          return customer.risk_action !== 'deny';
+        }
+        return false;
+      });
+      filteredCustomers.value = filteredData;
+    };
+
     return {
-      // ... existing return values ...
-      totalCustomers,
+      filteredCustomers,
+      selectedFilters,
       isLoading,
       error,
       isDrawerOpen,
@@ -304,6 +338,7 @@ export default {
       handleFormSubmit,
       handleRequestFormSubmit,
       closeOverlay,
+      applyFilters,
     };
   },
 };
@@ -443,7 +478,10 @@ th {
 .top-div .btn:hover {
   background-color: #f1f1f1;
 }
-
+.filter-options {
+  display: flex;
+  gap: 1rem;
+}
 .loading-overlay {
   position: absolute;
   top: 0;

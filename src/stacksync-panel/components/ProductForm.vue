@@ -62,13 +62,11 @@ export default {
     handleSubmit() {
       // Validate form data here if necessary
 
-      // Emit event to parent component with the product data
       this.$emit('form-submit', {
         data: this.product,
         isUpdate: this.isUpdate,
       });
 
-      // Optionally, reset the form after submission
       this.product = {
         name: '',
         description: '',

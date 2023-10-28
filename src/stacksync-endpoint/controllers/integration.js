@@ -11,7 +11,7 @@ const fetchPaymentSessionTimeout = async (req, res) => {
 
 const updatePaymentSessionTimeout = async (req, res) => {
   try {
-    const { timeout } = req.body; // Assuming timeout value is sent in the request body
+    const { timeout } = req.body;
     const response = await api.put('/integration/payment_session_timeout', {
       timeout,
     });
