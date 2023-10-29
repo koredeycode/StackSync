@@ -24,7 +24,6 @@
       </button>
     </div>
     <table v-if="!isLoading && totalProducts.length > 0">
-      <!-- Table headers -->
       <thead>
         <tr>
           <th>ID</th>
@@ -33,7 +32,6 @@
           <th>Price</th>
           <th>Quantity</th>
           <th>In Stock</th>
-          <!-- Add more table headers based on your product data structure -->
         </tr>
       </thead>
       <tbody>
@@ -44,7 +42,6 @@
           <td>{{ (product.price / 100).toLocaleString() }}</td>
           <td>{{ product.unlimited ? 'Unlimited' : product.quantity }}</td>
           <td>{{ product.in_stock ? 'Yes' : 'No' }}</td>
-          <!-- Menu button for update and delete options -->
           <div class="dropdown">
             <button class="dropbtn">
               <svg
@@ -68,7 +65,6 @@
     <p v-else-if="!isLoading && totalProducts.length === 0">
       No products found
     </p>
-    <!-- ... Loading and error messages ... -->
     <div class="loading-overlay" v-if="isLoading || error">
       <div v-if="isLoading">
         <div class="spinner"></div>
@@ -84,7 +80,6 @@
       :class="{ open: isDrawerOpen }"
       @click="closeDrawer"
     ></div>
-    <!-- Drawer for the form -->
     <div v-if="isDrawerOpen" class="drawer" :class="{ open: isDrawerOpen }">
       <div class="cancel-btn-div">
         <button @click="closeDrawer">
@@ -100,7 +95,6 @@
           </svg>
         </button>
       </div>
-      <!-- Form component for creating/updating product -->
       <ProductForm
         v-if="isCreateFormVisible || isUpdateFormVisible"
         @form-submit="handleFormSubmit"

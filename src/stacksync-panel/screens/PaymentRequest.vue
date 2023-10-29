@@ -43,7 +43,6 @@
     </div>
 
     <table v-if="!isLoading && filteredPaymentRequests.length > 0">
-      <!-- Table headers -->
       <thead>
         <tr>
           <th>Amount</th>
@@ -58,7 +57,6 @@
           <td>{{ request.status }}</td>
           <td>{{ request.customer.email }}</td>
           <td>{{ request.paid ? 'Yes' : 'No' }}</td>
-          <!-- Menu button for update and other options -->
           <div class="dropdown">
             <button class="dropbtn">
               <svg
@@ -73,10 +71,8 @@
               </svg>
             </button>
             <div class="dropdown-content">
-              <!-- <div @click="openPaymentRequestOptions(request)">Edit</div> -->
               <div @click="archivePaymentRequest(request)">Archive</div>
               <div @click="notifyPaymentRequest(request)">Notify</div>
-              <!-- Add more options as needed -->
             </div>
           </div>
         </tr>
@@ -85,7 +81,6 @@
     <p v-else-if="!isLoading && filteredPaymentRequests.length === 0">
       No payment requests found
     </p>
-    <!-- ... Loading and error messages ... -->
     <div class="loading-overlay" v-if="isLoading || error">
       <div v-if="isLoading">
         <div class="spinner"></div>
@@ -101,7 +96,6 @@
       :class="{ open: isDrawerOpen }"
       @click="closeDrawer"
     ></div>
-    <!-- Drawer for the form -->
     <div v-if="isDrawerOpen" class="drawer" :class="{ open: isDrawerOpen }">
       <div class="cancel-btn-div">
         <button @click="closeDrawer">
@@ -117,7 +111,6 @@
           </svg>
         </button>
       </div>
-      <!-- Form component for creating/updating payment request -->
       <PaymentRequestForm
         v-if="isCreateFormVisible || isUpdateFormVisible"
         @request-form-submit="handleFormSubmit"

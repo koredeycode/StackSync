@@ -37,7 +37,6 @@
       :class="{ open: isDrawerOpen }"
       @click="closeDrawer"
     ></div>
-    <!-- Drawer for the form -->
     <div v-if="isDrawerOpen" class="drawer" :class="{ open: isDrawerOpen }">
       <div class="cancel-btn-div">
         <button @click="closeDrawer">
@@ -79,11 +78,7 @@
     <h3>Transaction Performance</h3>
     <div class="performance">
       <Donut :pieData="transactionPerformance.count" title="Count" />
-      <Donut
-        v-if="transactionPerformance.errors"
-        :pieData="transactionPerformance.errors"
-        title="Errors"
-      />
+      <Donut :pieData="transactionPerformance.errors" title="Errors" />
     </div>
   </div>
 </template>

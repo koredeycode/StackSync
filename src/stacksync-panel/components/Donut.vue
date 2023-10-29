@@ -32,8 +32,8 @@ export default {
     chartOptions() {
       return {
         chart: {
-          width: 300,
-          height: 300,
+          width: '100%',
+          height: '100%',
           type: 'donut',
         },
         labels: Object.keys(this.pieData || {}),
@@ -72,5 +72,8 @@ export default {
 .chart {
   padding: 0.5rem;
   background: #f1f1f1;
+  flex: 1;
+  width: 200px;
+  height: 200px;
 }
 </style>

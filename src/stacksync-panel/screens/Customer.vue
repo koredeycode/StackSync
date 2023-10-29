@@ -44,15 +44,12 @@
     </div>
 
     <table v-if="!isLoading && filteredCustomers.length > 0">
-      <!-- Table headers -->
       <thead>
-        <!-- ... -->
         <tr>
           <th>ID</th>
           <th>Name</th>
           <th>Email</th>
           <th>Phone</th>
-          <!-- Add more table headers based on your customer data structure -->
         </tr>
       </thead>
       <tbody>
@@ -65,7 +62,6 @@
           <td>{{ `${customer.first_name} ${customer.last_name}` }}</td>
           <td>{{ customer.email }}</td>
           <td>{{ customer.phone }}</td>
-          <!-- Menu button for update and black/whitelist options -->
           <div class="dropdown">
             <button class="dropbtn">
               <svg
@@ -95,7 +91,6 @@
     <p v-else-if="!isLoading && filteredCustomers.length === 0">
       No customers found
     </p>
-    <!-- ... Loading and error messages ... -->
     <div class="loading-overlay" v-if="isLoading || error">
       <div v-if="isLoading">
         <div class="spinner"></div>
@@ -111,7 +106,6 @@
       :class="{ open: isDrawerOpen }"
       @click="closeDrawer"
     ></div>
-    <!-- Drawer for the form -->
     <div v-if="isDrawerOpen" class="drawer" :class="{ open: isDrawerOpen }">
       <div class="cancel-btn-div">
         <button @click="closeDrawer">
@@ -127,7 +121,6 @@
           </svg>
         </button>
       </div>
-      <!-- Form component for creating/updating customer -->
       <CustomerForm
         v-if="isCreateFormVisible || isUpdateFormVisible"
         @form-submit="handleFormSubmit"
@@ -219,7 +212,6 @@ export default {
 
         applyFilters();
       } catch (e) {
-
         error.value = e;
       } finally {
         isLoading.value = false;
