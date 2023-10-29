@@ -73,7 +73,7 @@
               </svg>
             </button>
             <div class="dropdown-content">
-              <div @click="openPaymentRequestOptions(request)">Edit</div>
+              <!-- <div @click="openPaymentRequestOptions(request)">Edit</div> -->
               <div @click="archivePaymentRequest(request)">Archive</div>
               <div @click="notifyPaymentRequest(request)">Notify</div>
               <!-- Add more options as needed -->
@@ -158,11 +158,11 @@ export default {
       paymentRequestData.value = {};
     };
 
-    const openPaymentRequestOptions = (paymentRequest) => {
-      paymentRequestData.value = { ...paymentRequest };
-      isUpdateFormVisible.value = true;
-      isDrawerOpen.value = true;
-    };
+    // const openPaymentRequestOptions = (paymentRequest) => {
+    //   paymentRequestData.value = { ...paymentRequest };
+    //   isUpdateFormVisible.value = true;
+    //   isDrawerOpen.value = true;
+    // };
 
     const closeDrawer = () => {
       isCreateFormVisible.value = false;
@@ -171,27 +171,14 @@ export default {
       paymentRequestData.value = {};
     };
 
-    const handleFormSubmit = async ({ data, isUpdate }) => {
+    const handleFormSubmit = async ({ data }) => {
       isLoading.value = true;
       try {
-        if (isUpdate) {
-          const { data: updatedData } = await api.put(
-            `/stacksync-endpoint/paymentrequests/${data.id}`,
-            data,
-          );
-          const index = totalPaymentRequests.value.findIndex(
-            (request) => request.id === updatedData.data.id,
-          );
-          if (index !== -1) {
-            totalPaymentRequests.value[index] = updatedData.data;
-          }
-        } else {
-          const { data: newData } = await api.post(
-            '/stacksync-endpoint/paymentrequests',
-            data,
-          );
-          totalPaymentRequests.value.unshift(newData.data);
-        }
+        const { data: newData } = await api.post(
+          '/stacksync-endpoint/paymentrequests',
+          data,
+        );
+        totalPaymentRequests.value.unshift(newData.data);
 
         applyFilters();
       } catch (e) {
@@ -297,7 +284,7 @@ export default {
       searchTerm,
       selectedFilters,
       openCreateForm,
-      openPaymentRequestOptions,
+      // openPaymentRequestOptions,
       archivePaymentRequest,
       notifyPaymentRequest,
       closeDrawer,

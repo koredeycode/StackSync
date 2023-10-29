@@ -13,8 +13,8 @@ const createProduct = async (req, res) => {
 
     productData.currency = process.env.PAYSTACK_INTEGRATION_CURRENCY;
 
-    const response = await api.post('/product', productData);
-    res.status(201).json(response.data);
+    const { data } = await api.post('/product', productData);
+    res.status(201).json(data);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -22,8 +22,8 @@ const createProduct = async (req, res) => {
 
 const listProducts = async (req, res) => {
   try {
-    const response = await api.get('/product');
-    res.status(200).json(response.data);
+    const { data } = await api.get('/product');
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -32,8 +32,8 @@ const listProducts = async (req, res) => {
 const fetchProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const response = await api.get(`/product/${id}`);
-    res.status(200).json(response.data);
+    const { data } = await api.get(`/product/${id}`);
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -53,8 +53,8 @@ const updateProduct = async (req, res) => {
       quantity,
     };
 
-    const response = await api.put(`/product/${id}`, productData);
-    res.status(200).json(response.data);
+    const { data } = await api.put(`/product/${id}`, productData);
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json(error);
   }

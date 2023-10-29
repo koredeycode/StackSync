@@ -38,7 +38,7 @@
         />
       </div>
       <div class="form-group">
-        <button class="btn" type="submit">Request Payment</button>
+        <button class="btn" type="submit">Payment Request</button>
       </div>
     </form>
   </div>

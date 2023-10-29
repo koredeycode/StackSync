@@ -2,6 +2,8 @@ import { status } from './controllers';
 import {
   fetchPaymentSessionTimeout,
   updatePaymentSessionTimeout,
+  fetchTransactionTotals,
+  fetchTransactionPerformance,
 } from './controllers/integration';
 import {
   getCustomers,
@@ -45,6 +47,8 @@ export default {
       auth,
       updatePaymentSessionTimeout,
     );
+    router.get('/integration/totals', fetchTransactionTotals);
+    router.get('/integration/performance', fetchTransactionPerformance);
 
     //Customer endpoints
     router.get('/customers', getCustomers);

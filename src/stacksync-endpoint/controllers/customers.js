@@ -2,8 +2,8 @@ import api from '../api';
 
 const getCustomers = async (req, res) => {
   try {
-    const response = await api.get('/customer');
-    res.status(200).json(response.data);
+    const { data } = await api.get('/customer');
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -12,8 +12,8 @@ const getCustomers = async (req, res) => {
 const getCustomerByEmailOrCode = async (req, res) => {
   try {
     const { email_or_code } = req.params;
-    const response = await api.get(`/customer/${email_or_code}`);
-    res.status(200).json(response.data);
+    const { data } = await api.get(`/customer/${email_or_code}`);
+    res.status(200).json(data);
   } catch (error) {
     if (error.response?.status === 404) {
       res.status(404).json({ error: 'Customer not found' });
@@ -25,8 +25,8 @@ const getCustomerByEmailOrCode = async (req, res) => {
 
 const createCustomer = async (req, res) => {
   try {
-    const response = await api.post('/customer', req.body);
-    res.status(201).json(response.data);
+    const { data } = await api.post('/customer', req.body);
+    res.status(201).json(data);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -37,8 +37,8 @@ const updateCustomer = async (req, res) => {
     const { code } = req.params;
     const updatedData = req.body;
 
-    const response = await api.put(`/customer/${code}`, updatedData);
-    res.status(200).json(response.data);
+    const { data } = await api.put(`/customer/${code}`, updatedData);
+    res.status(200).json(data);
   } catch (error) {
     if (error.response?.status === 404) {
       res.status(404).json({ error: 'Customer not found' });
@@ -56,8 +56,8 @@ const setRiskAction = async (req, res) => {
       customer: code,
       risk_action,
     };
-    const response = await api.post('/customer/set_risk_action', payload);
-    res.status(200).json(response.data);
+    const { data } = await api.post('/customer/set_risk_action', payload);
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json(error);
   }

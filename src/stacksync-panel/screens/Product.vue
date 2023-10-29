@@ -65,6 +65,9 @@
         </tr>
       </tbody>
     </table>
+    <p v-else-if="!isLoading && totalProducts.length === 0">
+      No products found
+    </p>
     <!-- ... Loading and error messages ... -->
     <div class="loading-overlay" v-if="isLoading || error">
       <div v-if="isLoading">

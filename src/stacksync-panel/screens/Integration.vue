@@ -1,6 +1,12 @@
 <template>
   <div class="integration">
     <div class="top-div">
+      <span
+        >Payment Timeout:
+        <span>{{ payment_session_timeout.payment_session_timeout }}</span></span
+      >
+      <button class="btn" @click="openDrawer">Set Timeout</button>
+
       <button class="refresh" @click="fetchData">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -24,41 +30,90 @@
       </div>
       <div><button @click="closeOverlay">Close</button></div>
     </div>
-    <form @submit.prevent="handleFormSubmit">
-      <div class="form-group">
-        <label for="payment_session_timeout">Payment Session Timeout:</label>
-        <input
-          type="number"
-          id="payment_session_timeout"
-          v-model="payment_session_timeout"
-          required
-        />
+    <div
+      class="overlay"
+      :class="{ open: isDrawerOpen }"
+      @click="closeDrawer"
+    ></div>
+    <!-- Drawer for the form -->
+    <div v-if="isDrawerOpen" class="drawer" :class="{ open: isDrawerOpen }">
+      <div class="cancel-btn-div">
+        <button @click="closeDrawer">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24"
+            viewBox="0 -960 960 960"
+            width="24"
+          >
+            <path
+              d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+            />
+          </svg>
+        </button>
       </div>
-      <div class="form-group">
-        <button class="btn" type="submit">Set Payment Session Timeout</button>
+
+      <SetTimeoutForm
+        @timeout-form-submit="handleFormSubmit"
+        :timeoutData="payment_session_timeout"
+      />
+    </div>
+    <div class="totals">
+      <h3>Transaction Totals ({{ transactionTotals.total_transactions }})</h3>
+      <div class="totals__div">
+        <div>
+          <span>Total Volume: </span
+          ><span>{{ transactionTotals.total_volume }}</span>
+        </div>
+        <div>
+          <span>Pending Transfers: </span
+          ><span>{{ transactionTotals.pending_transfers }}</span>
+        </div>
       </div>
-    </form>
+    </div>
+    <h3>Transaction Performance</h3>
+    <div class="performance">
+      <Donut :pieData="transactionPerformance.count" title="Count" />
+      <Donut :pieData="transactionPerformance.errors" title="Errors" />
+    </div>
   </div>
 </template>
 
 <script>
 import { useApi } from '@directus/extensions-sdk';
 import { ref, onMounted } from 'vue';
-
+import { SetTimeoutForm, Donut } from '../components';
 export default {
+  components: {
+    SetTimeoutForm,
+    Donut,
+  },
   setup(props) {
     const api = useApi();
-    const payment_session_timeout = ref(0);
+    const payment_session_timeout = ref({});
+    const transactionTotals = ref({});
+    const transactionPerformance = ref({});
     const isLoading = ref(false);
     const error = ref(null);
+    const isDrawerOpen = ref(false);
 
     const fetchData = async () => {
       isLoading.value = true;
       try {
-        const { data } = await api.get(
+        const { data: timeoutData } = await api.get(
           'stacksync-endpoint/integration/payment_session_timeout',
         );
-        payment_session_timeout.value = data.data.payment_session_timeout;
+        payment_session_timeout.value = timeoutData.data;
+
+        const { data: totalsData } = await api.get(
+          'stacksync-endpoint/integration/totals',
+        );
+        transactionTotals.value = totalsData.data;
+
+        const { data: performanceData } = await api.get(
+          'stacksync-endpoint/integration/performance',
+        );
+        transactionPerformance.value = performanceData.data;
+        console.log(transactionPerformance.value);
       } catch (e) {
         error.value = e;
       } finally {
@@ -66,20 +121,28 @@ export default {
       }
     };
 
-    const handleFormSubmit = async () => {
+    const handleFormSubmit = async ({ data }) => {
       isLoading.value = true;
       try {
         await api.put(
           'stacksync-endpoint/integration/payment_session_timeout',
           {
-            timeout: payment_session_timeout.value,
+            timeout: data.payment_session_timeout,
           },
         );
       } catch (e) {
         error.value = e;
       } finally {
         isLoading.value = false;
+        closeDrawer();
       }
+    };
+
+    const openDrawer = () => {
+      isDrawerOpen.value = true;
+    };
+    const closeDrawer = () => {
+      isDrawerOpen.value = false;
     };
 
     const closeOverlay = () => {
@@ -90,46 +153,63 @@ export default {
     onMounted(fetchData);
     return {
       payment_session_timeout,
+      transactionTotals,
+      transactionPerformance,
       isLoading,
       error,
+      isDrawerOpen,
       handleFormSubmit,
+      openDrawer,
       fetchData,
       closeOverlay,
+      closeDrawer,
     };
   },
 };
 </script>
-
 <style scoped>
-form {
-  max-width: 300px;
-  margin: 0 auto;
+.integration {
+  margin-top: 0px;
 }
 
-.form-group {
-  margin-bottom: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+.error {
+  color: red;
+  margin-top: 10px;
 }
 
-input {
+.drawer {
+  background-color: white;
+  position: absolute;
+  top: 0;
+  right: -30%;
+  width: 50%;
+  height: 100%;
+  padding: 1rem;
+
+  box-shadow: -2px 0 5px 0 rgba(0, 0, 0, 0.2);
+  transition: right 0.3s ease;
+
+  overflow-y: scroll;
+}
+.drawer.open {
+  right: 0;
+  z-index: 99;
+}
+
+.overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  padding: 0.5rem;
-  font-size: 14px;
+  height: 100%;
+  background-color: rgb(46, 4, 49);
+  opacity: 0.5;
+  z-index: 98;
 }
 
-.btn {
-  padding: 0.5rem;
-  width: 100%;
-
-  border: 1px solid black;
-  border-radius: 5px;
-  text-align: center;
-}
-
-.btn:hover {
-  background-color: #f1f1f1;
+.overlay.open {
+  display: block;
 }
 
 .top-div {
@@ -137,6 +217,23 @@ input {
   justify-content: space-between;
   margin-bottom: 20px;
 }
+.top-div .btn {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.top-div input {
+  padding: 0.5rem;
+}
+
+.cancel-btn-div {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cancel-btn-div button,
 .refresh {
   border-radius: 999px;
 
@@ -145,6 +242,19 @@ input {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.cancel-btn-div button:hover,
+.refresh:hover,
+.top-div .btn:hover {
+  background-color: #f1f1f1;
+}
+h3 {
+  font-size: large;
+  font-weight: bold;
+}
+.totals__div {
+  display: flex;
+  gap: 2rem;
 }
 .loading-overlay {
   position: absolute;
@@ -182,5 +292,8 @@ input {
 
 .error-message {
   color: red;
+}
+.performance {
+  display: flex;
 }
 </style>

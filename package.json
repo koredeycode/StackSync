@@ -38,5 +38,9 @@
 	"devDependencies": {
 		"@directus/extensions-sdk": "10.1.13",
 		"vue": "^3.3.7"
+	},
+	"dependencies": {
+		"apexcharts": "^3.43.0",
+		"vue3-apexcharts": "^1.4.4"
 	}
 }
