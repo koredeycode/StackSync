@@ -48,15 +48,15 @@
         <tr>
           <th>Amount</th>
           <th>Status</th>
-          <th>Customer Id</th>
+          <th>Customer Email</th>
           <th>Paid</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="request in filteredPaymentRequests" :key="request.id">
-          <td>{{ request.amount / 100 }}</td>
+          <td>{{ (request.amount / 100).toLocaleString() }}</td>
           <td>{{ request.status }}</td>
-          <td>{{ request.customer.id }}</td>
+          <td>{{ request.customer.email }}</td>
           <td>{{ request.paid ? 'Yes' : 'No' }}</td>
           <!-- Menu button for update and other options -->
           <div class="dropdown">

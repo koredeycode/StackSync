@@ -41,7 +41,7 @@
           <td>{{ product.id }}</td>
           <td>{{ product.name }}</td>
           <td>{{ product.description }}</td>
-          <td>{{ product.price / 100 }}</td>
+          <td>{{ (product.price / 100).toLocaleString() }}</td>
           <td>{{ product.unlimited ? 'Unlimited' : product.quantity }}</td>
           <td>{{ product.in_stock ? 'Yes' : 'No' }}</td>
           <!-- Menu button for update and delete options -->

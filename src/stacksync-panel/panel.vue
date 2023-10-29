@@ -1,5 +1,5 @@
 <template>
-  <div class="stacksync-panel-container" :class="{ 'has-header': showHeader }">
+  <div class="stacksync-panel-container">
     <component :is="componentMap[type]" />
   </div>
 </template>
@@ -16,7 +16,7 @@ export default {
     },
     type: {
       type: String,
-      default: 'customers',
+      default: 'integration',
     },
   },
   data() {
@@ -28,9 +28,6 @@ export default {
         integration: 'Integration',
       },
     };
-  },
-  setup(props) {
-    return {};
   },
 };
 </script>

@@ -3,7 +3,9 @@
     <div class="top-div">
       <span
         >Payment Timeout:
-        <span>{{ payment_session_timeout.payment_session_timeout }}</span></span
+        <span
+          >{{ payment_session_timeout.payment_session_timeout }} seconds</span
+        ></span
       >
       <button class="btn" @click="openDrawer">Set Timeout</button>
 
@@ -62,18 +64,26 @@
       <div class="totals__div">
         <div>
           <span>Total Volume: </span
-          ><span>{{ transactionTotals.total_volume }}</span>
+          ><span>{{
+            (transactionTotals.total_volume / 100).toLocaleString()
+          }}</span>
         </div>
         <div>
           <span>Pending Transfers: </span
-          ><span>{{ transactionTotals.pending_transfers }}</span>
+          ><span>{{
+            (transactionTotals.pending_transfers / 100).toLocaleString()
+          }}</span>
         </div>
       </div>
     </div>
     <h3>Transaction Performance</h3>
     <div class="performance">
       <Donut :pieData="transactionPerformance.count" title="Count" />
-      <Donut :pieData="transactionPerformance.errors" title="Errors" />
+      <Donut
+        v-if="transactionPerformance.errors"
+        :pieData="transactionPerformance.errors"
+        title="Errors"
+      />
     </div>
   </div>
 </template>
@@ -251,6 +261,7 @@ export default {
 h3 {
   font-size: large;
   font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 .totals__div {
   display: flex;
@@ -293,7 +304,11 @@ h3 {
 .error-message {
   color: red;
 }
+.totals {
+  margin-bottom: 1rem;
+}
 .performance {
   display: flex;
+  gap: 0.5rem;
 }
 </style>

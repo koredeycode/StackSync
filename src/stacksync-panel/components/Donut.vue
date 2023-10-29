@@ -1,5 +1,7 @@
 <template>
-  <apexchart :options="chartOptions" :series="chartSeries"></apexchart>
+  <div class="chart">
+    <apexchart :options="chartOptions" :series="chartSeries"></apexchart>
+  </div>
 </template>
 
 <script>
@@ -30,7 +32,8 @@ export default {
     chartOptions() {
       return {
         chart: {
-          width: '100%',
+          width: 300,
+          height: 300,
           type: 'donut',
         },
         labels: Object.keys(this.pieData || {}),
@@ -53,11 +56,12 @@ export default {
         dataLabels: {
           enabled: true,
           formatter(val, opts) {
-            const name = opts.w.globals.labels[opts.seriesIndex];
-            return [name, val.toFixed(1) + '%'];
+            // const name = opts.w.globals.labels[opts.seriesIndex];
+            // return [name, val.toFixed(1) + '%'];
+            return val.toFixed(1) + '%';
           },
         },
-        legend: { show: false },
+        legend: { show: true },
       };
     },
   },
@@ -65,5 +69,8 @@ export default {
 </script>
 
 <style scoped>
-/* Add your component-specific styles here */
+.chart {
+  padding: 0.5rem;
+  background: #f1f1f1;
+}
 </style>
