@@ -23,23 +23,33 @@
         </svg>
       </button>
     </div>
-    <div class="filter-options">
-      <label>
-        <input
-          type="checkbox"
-          v-model="selectedFilters.pending"
-          @change="applyFilters"
-        />
-        Pending
-      </label>
-      <label>
-        <input
-          type="checkbox"
-          v-model="selectedFilters.success"
-          @change="applyFilters"
-        />
-        Successful
-      </label>
+    <div style="display: flex; justify-content: space-between">
+      <div class="filter-options">
+        <label>
+          <input
+            type="checkbox"
+            v-model="selectedFilters.pending"
+            @change="applyFilters"
+          />
+          Pending
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            v-model="selectedFilters.paid"
+            @change="applyFilters"
+          />
+          Paid
+        </label>
+      </div>
+      <div class="bulk-actions">
+        <button class="btn" @click="notifyAllPendingRequest">
+          Notify All Pending
+        </button>
+        <button class="btn" @click="archiveAllPaidRequests">
+          Archive All Paid
+        </button>
+      </div>
     </div>
 
     <table v-if="!isLoading && filteredPaymentRequests.length > 0">
@@ -72,7 +82,9 @@
             </button>
             <div class="dropdown-content">
               <div @click="archivePaymentRequest(request)">Archive</div>
-              <div @click="notifyPaymentRequest(request)">Notify</div>
+              <div v-if="!request.paid" @click="notifyPaymentRequest(request)">
+                Notify
+              </div>
             </div>
           </div>
         </tr>
@@ -143,7 +155,7 @@ export default {
 
     const selectedFilters = reactive({
       pending: true,
-      success: true,
+      paid: true,
     });
     const openCreateForm = () => {
       isCreateFormVisible.value = true;
@@ -258,12 +270,49 @@ export default {
           if (selectedFilters.pending && request.status === 'pending') {
             return true;
           }
-          if (selectedFilters.success && request.status === 'success') {
+          if (selectedFilters.paid && request.paid) {
             return true;
           }
           return false;
         },
       );
+    };
+
+    const notifyAllPendingRequest = async () => {
+      isLoading.value = true;
+      try {
+        // await api.post('/stacksync-endpoint/paymentrequests/notify');
+        const pendingRequests = totalPaymentRequests.value.filter(
+          (request) => request.status === 'pending',
+        );
+        await Promise.all(
+          pendingRequests.map(
+            async (request) => await notifyPaymentRequest(request),
+          ),
+        );
+      } catch (e) {
+        error.value = e;
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
+    const archiveAllPaidRequests = async () => {
+      isLoading.value = true;
+      try {
+        const paidRequests = totalPaymentRequests.value.filter(
+          (request) => request.paid,
+        );
+        await Promise.all(
+          paidRequests.map(
+            async (request) => await archivePaymentRequest(request),
+          ),
+        );
+      } catch (e) {
+        error.value = e;
+      } finally {
+        isLoading.value = false;
+      }
     };
 
     return {
@@ -286,6 +335,8 @@ export default {
       fetchData,
       closeOverlay,
       applyFilters,
+      notifyAllPendingRequest,
+      archiveAllPaidRequests,
     };
   },
 };
@@ -427,7 +478,8 @@ th {
 .top-div .btn:hover {
   background-color: #f1f1f1;
 }
-.filter-options {
+.filter-options,
+.bulk-actions {
   display: flex;
   gap: 1rem;
 }
