@@ -43,6 +43,10 @@ git clone https://github.com/koredeycode/StackSync.git
 
 ![panel view](./panel.png)
 
+### Demo
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/PE3BtRiyFQg" frameborder="0" allowfullscreen></iframe>
+
 ## Collaborators
 
 - [koredeycode](https://github.com/koredeycode)
