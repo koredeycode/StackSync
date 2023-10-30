@@ -1,10 +1,11 @@
 import PanelComponent from './panel.vue';
+import preview from './assets/preview.js';
 
 export default {
   id: 'stacksync-panel',
   name: 'Stack Sync',
   icon: 'payment',
-  description: 'Manage your Paystack Integration from Directus!',
+  description: 'Manage your Paystack Integration from Directus.',
   options: [
     {
       field: 'type',
@@ -28,4 +29,5 @@ export default {
   component: PanelComponent,
   minWidth: 30,
   minHeight: 20,
+  preview,
 };
