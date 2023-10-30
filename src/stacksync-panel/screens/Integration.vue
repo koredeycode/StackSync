@@ -118,7 +118,6 @@ export default {
           'stacksync-endpoint/integration/performance',
         );
         transactionPerformance.value = performanceData.data;
-        console.log(transactionPerformance.value);
       } catch (e) {
         error.value = e;
       } finally {
