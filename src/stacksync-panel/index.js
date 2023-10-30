@@ -1,5 +1,4 @@
 import PanelComponent from './panel.vue';
-import preview from './assets/preview.js';
 
 export default {
   id: 'stacksync-panel',
@@ -29,5 +28,4 @@ export default {
   component: PanelComponent,
   minWidth: 30,
   minHeight: 20,
-  preview,
 };
