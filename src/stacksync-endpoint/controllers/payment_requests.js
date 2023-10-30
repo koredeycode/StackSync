@@ -1,5 +1,15 @@
 import api from '../api';
 
+/**
+ * Creates a new payment request using the provided data from the request body
+ * and sends the created payment request object as a JSON response.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const createPaymentRequest = async (req, res) => {
   try {
     const { customer, amount, due_date, description } = req.body;
@@ -17,6 +27,15 @@ const createPaymentRequest = async (req, res) => {
   }
 };
 
+/**
+ * Fetches a list of payment requests from the API and sends it as a JSON response.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const listPaymentRequests = async (req, res) => {
   try {
     const { data } = await api.get('/paymentrequest');
@@ -26,6 +45,17 @@ const listPaymentRequests = async (req, res) => {
   }
 };
 
+/**
+ * Updates an existing payment request identified by the provided ID or code
+ * with the data from the request body and sends the updated payment request
+ * object as a JSON response.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const updatePaymentRequest = async (req, res) => {
   try {
     const { id_or_code } = req.params;
@@ -44,6 +74,15 @@ const updatePaymentRequest = async (req, res) => {
   }
 };
 
+/**
+ * Fetches a payment request by ID or code from the API and sends it as a JSON response.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const fetchPaymentRequest = async (req, res) => {
   try {
     const { id_or_code } = req.params;
@@ -56,6 +95,16 @@ const fetchPaymentRequest = async (req, res) => {
   }
 };
 
+/**
+ * Archives a payment request identified by the provided code and sends
+ * the archived payment request object as a JSON response.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const archivePaymentRequest = async (req, res) => {
   try {
     const { code } = req.params;
@@ -68,6 +117,16 @@ const archivePaymentRequest = async (req, res) => {
   }
 };
 
+/**
+ * Sends a notification for a payment request identified by the provided code
+ * and sends the notification response as a JSON response.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const sendNotification = async (req, res) => {
   try {
     const { code } = req.params;

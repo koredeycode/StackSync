@@ -1,5 +1,15 @@
 import api from '../api';
 
+/**
+ * Creates a new product using the provided data from the request body
+ * and sends the created product object as a JSON response.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object containing product data.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const createProduct = async (req, res) => {
   try {
     const { name, description, price, unlimited, quantity } = req.body;
@@ -20,6 +30,15 @@ const createProduct = async (req, res) => {
   }
 };
 
+/**
+ * Fetches a list of products from the API and sends it as a JSON response.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const listProducts = async (req, res) => {
   try {
     const { data } = await api.get('/product');
@@ -29,6 +48,15 @@ const listProducts = async (req, res) => {
   }
 };
 
+/**
+ * Fetches a product by ID from the API and sends it as a JSON response.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object containing product ID.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const fetchProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -39,6 +67,16 @@ const fetchProduct = async (req, res) => {
   }
 };
 
+/**
+ * Updates an existing product identified by the provided ID with the data from
+ * the request body and sends the updated product object as a JSON response.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object containing product ID and updated data.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;

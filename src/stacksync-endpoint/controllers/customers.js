@@ -1,5 +1,14 @@
 import api from '../api';
 
+/**
+ * Retrieves a list of customers from the API and sends it as a JSON response.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const getCustomers = async (req, res) => {
   try {
     const { data } = await api.get('/customer');
@@ -9,6 +18,16 @@ const getCustomers = async (req, res) => {
   }
 };
 
+/**
+ * Retrieves a customer by email or code from the API and sends it as a JSON response.
+ * If the customer is not found, it responds with a 404 error.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const getCustomerByEmailOrCode = async (req, res) => {
   try {
     const { email_or_code } = req.params;
@@ -23,6 +42,16 @@ const getCustomerByEmailOrCode = async (req, res) => {
   }
 };
 
+/**
+ * Creates a new customer using the provided data from the request body and sends
+ * the created customer object as a JSON response.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const createCustomer = async (req, res) => {
   try {
     const { data } = await api.post('/customer', req.body);
@@ -32,6 +61,17 @@ const createCustomer = async (req, res) => {
   }
 };
 
+/**
+ * Updates an existing customer identified by the provided code with the data from
+ * the request body and sends the updated customer object as a JSON response.
+ * If the customer is not found, it responds with a 404 error.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const updateCustomer = async (req, res) => {
   try {
     const { code } = req.params;
@@ -48,6 +88,16 @@ const updateCustomer = async (req, res) => {
   }
 };
 
+/**
+ * Sets a risk action for a specific customer identified by the provided code and
+ * sends the updated customer object as a JSON response.
+ *
+ * @function
+ * @async
+ * @param {Object} req - Express.js request object.
+ * @param {Object} res - Express.js response object.
+ * @returns {void}
+ */
 const setRiskAction = async (req, res) => {
   try {
     const { code } = req.params;
