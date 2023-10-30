@@ -39,7 +39,9 @@ git clone https://github.com/koredeycode/StackSync.git
 
 ## Screenshots/Video
 
-{ ToDo }
+![stacksync view](./stacksync.png)
+
+![panel view](./panel.png)
 
 ## Collaborators
 
