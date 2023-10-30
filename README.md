@@ -45,7 +45,7 @@ git clone https://github.com/koredeycode/StackSync.git
 
 ### Demo
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/PE3BtRiyFQg" frameborder="0" allowfullscreen></iframe>
+[Watch Video Demonstration](https://www.youtube.com/watch?v=PE3BtRiyFQg)
 
 ## Collaborators
 
